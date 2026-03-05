@@ -371,8 +371,7 @@ def add_parcel():
 # -----------------------------
 # ✅ สร้าง QR อัตโนมัติ
 # -----------------------------
-        base_url = request.host_url.rstrip('/')
-        qr_url = f"{base_url}/update_status/{token}"
+        qr_url = f"https://manageparcel.onrender.com/update_status/{token}"
 
         img = qrcode.make(qr_url)
 
@@ -580,8 +579,7 @@ def generate_qr(tracking_number):
     token = parcel['access_token']
 
     from flask import request
-    base_url = request.host_url.rstrip('/')
-    qr_url = f"{base_url}/update_status/{token}"
+    qr_url = f"https://manageparcel.onrender.com/update_status/{token}"
 
     img = qrcode.make(qr_url)
 
@@ -620,4 +618,5 @@ def tracking_by_number(tracking_number):
 # เริ่มรันเว็บ
 # -----------------------------
 if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=5000, debug=True)
