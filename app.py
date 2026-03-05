@@ -63,7 +63,6 @@ def register():
             return redirect(url_for('register'))
 
         # ✅ ต้องมีตัวเลขอย่างน้อย 1 ตัว
-        import re
         if not re.search(r'\d', password):
             flash('❌ รหัสผ่านต้องมีตัวเลขอย่างน้อย 1 ตัว', 'danger')
             return redirect(url_for('register'))
