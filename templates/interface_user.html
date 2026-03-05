@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>ตรวจสอบพัสดุ</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#f4f4f4;
+}
+
+header{
+background:#d71920;
+color:white;
+padding:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.container{
+display:flex;
+justify-content:center;
+margin-top:80px;
+}
+
+.card{
+background:white;
+padding:40px;
+width:420px;
+border-radius:12px;
+box-shadow:0 8px 20px rgba(0,0,0,0.15);
+text-align:center;
+}
+
+input{
+width:100%;
+padding:12px;
+border-radius:6px;
+border:1px solid #ccc;
+margin-bottom:10px;
+}
+
+button{
+width:100%;
+padding:12px;
+border:none;
+background:#d71920;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#b1151a;
+}
+
+.logout{
+color:white;
+text-decoration:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div>
+📦 MyParcel
+</div>
+
+<div>
+สวัสดี {{ username }} |
+<a class="logout" href="/logout.html">Logout</a>
+</div>
+
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h2>ตรวจสอบพัสดุ</h2>
+
+<form id="searchForm">
+
+<input type="text" id="trackingNumber" placeholder="กรอกเลขพัสดุ" required>
+
+<button type="submit">ค้นหา</button>
+
+</form>
+
+</div>
+
+</div>
+
+<script>
+
+document.getElementById("searchForm").addEventListener("submit", function(e){
+
+e.preventDefault()
+
+let tracking = document.getElementById("trackingNumber").value
+
+window.location.href = "/tracking_by_number/" + tracking
+
+})
+
+</script>
+
+</body>
+</html>

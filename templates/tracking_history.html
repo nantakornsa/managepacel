@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>ประวัติการเคลื่อนไหวพัสดุ</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #d71920;
+    }
+    .parcel-info {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: 20px auto;
+    }
+    .timeline {
+      max-width: 600px;
+      margin: auto;
+      position: relative;
+      padding-left: 30px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 15px;
+      width: 3px;
+      background: #d71920;
+      top: 0;
+      bottom: 0;
+    }
+    .event {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    .event::before {
+      content: '';
+      position: absolute;
+      left: -20px;
+      top: 18px;
+      width: 10px;
+      height: 10px;
+      background: #d71920;
+      border-radius: 50%;
+    }
+    .timestamp {
+      color: gray;
+      font-size: 14px;
+    }
+    .status {
+      color: #d71920;
+      font-weight: bold;
+    }
+    .note {
+      margin-top: 5px;
+    }
+    .back {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      text-decoration: none;
+      color: #d71920;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📦 ประวัติการเคลื่อนไหวพัสดุ</h1>
+
+  <div class="parcel-info">
+    <p><b>เลขพัสดุ:</b> {{ parcel['tracking_number'] }}</p>
+    <p><b>ผู้ส่ง:</b> {{ parcel['sender_name'] }}</p>
+    <p><b>ผู้รับ:</b> {{ parcel['receiver_name'] }}</p>
+    <p><b>ปลายทาง:</b> {{ parcel['destination'] }}</p>
+  </div>
+
+  <div class="timeline">
+    {% if events %}
+      {% for e in events %}
+        <div class="event">
+          <div class="timestamp">{{ e['timestamp'] }}</div>
+          <div class="status">{{ e['status_name'] }} ({{ e['center_name'] }})</div>
+          <div class="note">{{ e['note'] or '-' }}</div>
+          <div style="font-size:13px;color:gray;">อัปเดตโดย: {{ e['updated_by'] }}</div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p style="text-align:center;">❌ ยังไม่มีประวัติการเคลื่อนไหวของพัสดุนี้</p>
+    {% endif %}
+  </div>
+
+  <a href="/interface.html" class="back">⬅ กลับไปหน้าพัสดุทั้งหมด</a>
+
+</body>
+</html>

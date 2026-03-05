@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>รายการพัสดุทั้งหมด</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #d71920;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background: #d71920;
+      color: white;
+    }
+    tr:hover {background-color: #f1f1f1;}
+    .empty {
+      text-align: center;
+      margin-top: 50px;
+      color: gray;
+    }
+    .add-btn {
+      display: inline-block;
+      background: #d71920;
+      color: white;
+      padding: 10px 15px;
+      text-decoration: none;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+
+    /* 🔍 ช่องค้นหา */
+    .search-box {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    .search-box input[type="text"] {
+      padding: 8px;
+      width: 250px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .search-box button {
+      padding: 8px 12px;
+      background: #d71920;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .search-box a {
+      margin-left: 10px;
+      color: #d71920;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    /* 🎯 ปุ่มอัปเดตสถานะ และดูประวัติ */
+    .action-btn {
+      padding: 6px 10px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 14px;
+      color: white;
+    }
+    .history-btn {
+      background: #d71920; /* แดง */
+      margin-left: 5px;
+    }
+    /* 🔓 Top bar + Logout */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.user-info {
+  font-size: 14px;
+}
+
+.logout-btn {
+  background: white;
+  color: #d71920;
+  border: 2px solid #d71920;
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.logout-btn:hover {
+  background: #d71920;
+  color: white;
+}
+  </style>
+</head>
+
+<body>
+  <div class="top-bar">
+  <div class="user-info">
+    👤 {{ session['username'] }}
+  </div>
+  <a href="/logout.html" class="logout-btn">🚪 Logout</a>
+</div>
+
+
+  <h1>📦 รายการพัสดุทั้งหมด</h1>
+
+  <!-- ✅ ช่องค้นหา -->
+  <div class="search-box">
+    <form action="/search" method="get" style="display:inline-block;">
+      <input type="text" name="q" placeholder="ค้นหาเลขพัสดุ / ผู้ส่ง / ผู้รับ"
+             value="{{ keyword if keyword else '' }}">
+      <button type="submit">ค้นหา</button>
+    </form>
+    <a href="/interface.html">ดูทั้งหมด</a>
+  </div>
+
+  <div style="text-align:center;">
+    <a href="/add_parcel" class="add-btn">➕ เพิ่มพัสดุใหม่</a>
+  </div>
+
+  {% if parcels %}
+  <table>
+    <tr>
+      <th>Tracking No.</th>
+      <th>ผู้ส่ง</th>
+      <th>ผู้รับ</th>
+      <th>ปลายทาง</th>
+      <th>น้ำหนัก</th>
+      <th>ขนาด</th>
+      <th>สถานะ</th>
+      <th>อัพเดท</th>
+      <th>ข้อมูลสถานะ</th>
+    </tr>
+    {% for p in parcels %}
+    <tr>
+      <td>{{ p['tracking_number'] }}</td>
+      <td>{{ p['sender_name'] }}</td>
+      <td>{{ p['receiver_name'] }}</td>
+      <td>{{ p['destination'] }}</td>
+      <td>{{ p['weight'] or '-' }}</td>
+      <td>{{ p['size'] or '-' }}</td>
+      <td>{{ p['status_name'] or 'ยังไม่มีสถานะ' }}</td>
+
+      <td>
+      <img src="{{ url_for('static', filename='qr/' + p['tracking_number'] + '.png') }}" width="80">
+      </td>
+
+      <!-- ✅ ปุ่มอัปเดตสถานะ + ดูประวัติ -->
+      <td>
+        <a href="/tracking/{{ p['parcel_id'] }}" class="action-btn history-btn">ดูประวัติ</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+    <p class="empty">ยังไม่มีข้อมูลพัสดุในระบบ</p>
+  {% endif %}
+
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>สมัครสมาชิก - ระบบติดตามพัสดุ</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin:0;
+  background:#f4f4f4;
+}
+
+.container{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.box{
+  background:white;
+  padding:30px;
+  border-radius:15px;
+  width:350px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.2);
+}
+
+h2{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.input-group{
+  position: relative;
+}
+
+input{
+  width:100%;
+  padding:10px;
+  margin-bottom:12px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  box-sizing:border-box;
+}
+
+.toggle{
+  position:absolute;
+  right:10px;
+  top:10px;
+  cursor:pointer;
+  font-size:14px;
+}
+
+button{
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:8px;
+  background:#d71920;
+  color:white;
+  cursor:pointer;
+  font-size:15px;
+}
+
+button:disabled{
+  background:gray;
+  cursor:not-allowed;
+}
+
+.link{
+  text-align:center;
+  margin-top:12px;
+  font-size:14px;
+}
+
+.alert{
+  text-align:center;
+  color:red;
+  margin-bottom:10px;
+}
+
+.requirements{
+  font-size:13px;
+  margin-bottom:10px;
+}
+
+.valid{
+  color:green;
+}
+
+.invalid{
+  color:red;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<div class="box">
+
+<h2>สมัครสมาชิก</h2>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<form method="POST" action="/register.html" id="registerForm">
+
+  <input type="text" name="username" placeholder="Username" required>
+
+  <div class="input-group">
+    <input type="password" id="password" name="password" placeholder="Password" required>
+    <span class="toggle" onclick="togglePassword('password')">👁</span>
+  </div>
+
+  <div class="input-group">
+    <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required>
+    <span class="toggle" onclick="togglePassword('confirm_password')">👁</span>
+  </div>
+
+  <div class="requirements">
+    <div id="length" class="invalid">• อย่างน้อย 8 ตัวอักษร</div>
+    <div id="number" class="invalid">• มีตัวเลขอย่างน้อย 1 ตัว</div>
+    <div id="match" class="invalid">• รหัสผ่านต้องตรงกัน</div>
+  </div>
+
+  <button type="submit" id="submitBtn" disabled>สมัครสมาชิก</button>
+
+</form>
+
+<div class="link">
+  มีบัญชีอยู่แล้ว?
+  <a href="/login.html">เข้าสู่ระบบ</a>
+</div>
+
+</div>
+</div>
+
+<script>
+const password = document.getElementById("password");
+const confirmPassword = document.getElementById("confirm_password");
+const submitBtn = document.getElementById("submitBtn");
+
+const lengthCheck = document.getElementById("length");
+const numberCheck = document.getElementById("number");
+const matchCheck = document.getElementById("match");
+
+function validatePassword(){
+    const pass = password.value;
+    const confirm = confirmPassword.value;
+
+    const hasLength = pass.length >= 8;
+    const hasNumber = /\d/.test(pass);
+    const isMatch = pass === confirm && pass.length > 0;
+
+    lengthCheck.className = hasLength ? "valid" : "invalid";
+    numberCheck.className = hasNumber ? "valid" : "invalid";
+    matchCheck.className = isMatch ? "valid" : "invalid";
+
+    submitBtn.disabled = !(hasLength && hasNumber && isMatch);
+}
+
+password.addEventListener("input", validatePassword);
+confirmPassword.addEventListener("input", validatePassword);
+
+function togglePassword(id){
+    const field = document.getElementById(id);
+    field.type = field.type === "password" ? "text" : "password";
+}
+</script>
+
+</body>
+</html>

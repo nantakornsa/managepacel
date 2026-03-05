@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>อัปเดตสถานะพัสดุ</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #d71920;
+    }
+    form {
+      max-width: 400px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 5px;
+    }
+    select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      margin-top: 15px;
+      background: #d71920;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+    }
+    .back {
+      display: block;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>📦 อัปเดตสถานะพัสดุ</h1>
+
+  <form action="/save_status/{{ parcel['access_token'] }}" method="POST">
+    <p><b>เลขพัสดุ:</b> {{ parcel['tracking_number'] }}</p>
+
+    <label>เลือกสถานะใหม่:</label>
+    <select name="status_id" required>
+      {% for s in statuses %}
+        <option value="{{ s['status_id'] }}">{{ s['status_name'] }}</option>
+      {% endfor %}
+    </select>
+
+    <label>เลือกศูนย์คัดแยก:</label>
+    <select name="center_id" required>
+      {% for c in centers %}
+        <option value="{{ c['center_id'] }}">{{ c['center_name'] }}</option>
+      {% endfor %}
+    </select>
+
+    <label>หมายเหตุ (ถ้ามี):</label>
+    <textarea name="note" placeholder="เช่น พัสดุถึงศูนย์ขอนแก่นแล้ว"></textarea>
+
+    <button type="submit">บันทึกการอัปเดต</button>
+  </form>
+
+  <a href="/interface.html" class="back">⬅ กลับไปหน้ารายการพัสดุ</a>
+</body>
+</html>

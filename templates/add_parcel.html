@@ -1,0 +1,121 @@
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>เพิ่มข้อมูลพัสดุ</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 40px;
+    }
+    form {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      width: 420px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2, h3 {
+      text-align: center;
+      color: #d71920;
+    }
+    input, textarea, select {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background: #d71920;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 15px;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 3px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <form method="POST" action="/add_parcel">
+    <h2>เพิ่มข้อมูลพัสดุใหม่</h2>
+
+    <div class="section">
+      <h3>📦 ผู้ส่ง (Sender)</h3>
+      <label>ชื่อผู้ส่ง</label>
+      <input type="text" name="sender_name" required>
+      <label>เบอร์โทร</label>
+      <input type="text" name="sender_phone">
+      <label>อีเมล</label>
+      <input type="email" name="sender_email">
+      <label>ที่อยู่</label>
+      <textarea name="sender_address"></textarea>
+    </div>
+
+    <div class="section">
+      <h3>🎯 ผู้รับ (Receiver)</h3>
+      <label>ชื่อผู้รับ</label>
+      <input type="text" name="receiver_name" required>
+      <label>เบอร์โทร</label>
+      <input type="text" name="receiver_phone">
+      <label>อีเมล</label>
+      <input type="email" name="receiver_email">
+      <label>ที่อยู่</label>
+      <textarea name="receiver_address"></textarea>
+    </div>
+
+    <div class="section">
+      <h3>🚚 ข้อมูลพัสดุ (Parcel)</h3>
+      <label>เลขพัสดุ (Tracking Number)</label>
+      <input type="text" placeholder="ระบบจะสร้างให้อัตโนมัติหลังบันทึก" disabled>
+      <label>ปลายทาง</label>
+      <input type="text" name="destination">
+      <label>น้ำหนัก (กก.)</label>
+      <input type="number" step="0.1" name="weight">
+      <label>ขนาด (เช่น S / M / L)</label>
+      <input type="text" name="size">
+      <label>สถานะเริ่มต้น</label>
+      <select name="status">
+        <option value="1">รับเข้าระบบแล้ว</option>
+        <option value="2">กำลังจัดส่ง</option>
+        <option value="3">จัดส่งสำเร็จ</option>
+      </select>
+
+      <label>ศูนย์คัดแยก</label>
+<select name="center_id" required>
+  {% for center in centers %}
+    <option value="{{ center['center_id'] }}">
+      {{ center['center_name'] }}
+    </option>
+  {% endfor %}
+</select>
+
+    </div>
+
+    <button type="submit">บันทึกข้อมูล</button>
+  </form>
+
+</body>
+</html>
