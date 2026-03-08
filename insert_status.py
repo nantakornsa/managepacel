@@ -13,14 +13,11 @@ cur.executemany("INSERT INTO parcel_status (status_name) VALUES (%s)", [
     ('จัดส่งสำเร็จ',)
 ]) 
 
-cur.executemany(
-    "INSERT INTO sorting_centers (center_name, location) VALUES (%s, %s)",
-    [
-        ('ศูนย์มหาสารคาม', 'มหาสารคาม'),
-        ('ศูนย์ขอนแก่น', 'ขอนแก่น'),
-        ('ศูนย์กรุงเทพ', 'กรุงเทพ')
-    ]
-)
+cur.executemany("INSERT INTO sorting_centers (center_name, location) VALUES (%s, %s)" , [
+    ('ศูนย์มหาสารคาม', 'มหาสารคาม'),
+    ('ศูนย์ขอนแก่น', 'ขอนแก่น'),
+    ('ศูนย์กรุงเทพ', 'กรุงเทพ')
+])
 
 conn.commit()
 cur.close()
