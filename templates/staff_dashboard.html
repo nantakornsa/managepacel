@@ -144,7 +144,7 @@ window.location.href = qrCodeMessage
 
 </script>
 
-<body  onload="startScanner()">
+<body>
   <div class="top-bar">
   <div class="user-info">
     👤 {{ session['username'] }}
@@ -155,8 +155,8 @@ window.location.href = qrCodeMessage
   <h1>📦 รายการพัสดุทั้งหมด</h1>
 
   <a href="/scan_qr">
-    <button>📷 สแกน QR</button>
-  </a>  
+  <button>📷 สแกน QR</button>
+  </a>
 
 <div id="reader" style="width:300px; margin:20px auto;"></div>
 

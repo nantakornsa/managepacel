@@ -11,12 +11,27 @@ body{
 font-family:Arial;
 text-align:center;
 background:#f4f4f4;
+margin:0;
+}
+
+h2{
+margin-top:30px;
 }
 
 #reader{
 width:320px;
 margin:auto;
-margin-top:50px;
+margin-top:20px;
+}
+
+.back-btn{
+display:inline-block;
+margin-top:20px;
+padding:10px 15px;
+background:#d71920;
+color:white;
+text-decoration:none;
+border-radius:6px;
 }
 </style>
 
@@ -28,21 +43,32 @@ margin-top:50px;
 
 <div id="reader"></div>
 
+<a href="/staff_dashboard" class="back-btn">⬅ กลับหน้าหลัก</a>
+
 <script>
 
-function onScanSuccess(decodedText) {
+function onScanSuccess(decodedText, decodedResult) {
 
-    // เมื่อสแกนได้จะเปิดลิงก์ใน QR
-    window.location.href = decodedText
+    // หยุดกล้องก่อน
+    scanner.clear();
+
+    // เปิดลิงก์ใน QR
+    if(decodedText.startsWith("http")){
+        window.location.href = decodedText;
+    }
 
 }
 
-let scanner = new Html5QrcodeScanner(
+const scanner = new Html5QrcodeScanner(
     "reader",
-    { fps: 10, qrbox: 250 }
-)
+    {
+        fps: 10,
+        qrbox: 250,
+        rememberLastUsedCamera: true
+    }
+);
 
-scanner.render(onScanSuccess)
+scanner.render(onScanSuccess);
 
 </script>
 
