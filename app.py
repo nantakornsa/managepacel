@@ -30,29 +30,23 @@ def init_default_data():
     conn = get_db_connection()
     c = conn.cursor()
 
-    status_check = conn.execute("SELECT COUNT(*) FROM parcel_status").fetchone()[0]
+    c.execute("""
+        INSERT INTO parcel_status (status_name)
+        VALUES
+        ('รับเข้าระบบแล้ว'),
+        ('กำลังจัดส่ง'),
+        ('จัดส่งสำเร็จ')
+        ON CONFLICT DO NOTHING
+    """)
 
-    if status_check == 0:
-        c.executemany(
-            "INSERT INTO parcel_status (status_name) VALUES (%s)",
-            [
-                ('รับเข้าระบบแล้ว',),
-                ('กำลังจัดส่ง',),
-                ('จัดส่งสำเร็จ',)
-            ]
-        )
-
-    center_check = conn.execute("SELECT COUNT(*) FROM sorting_centers").fetchone()[0]
-
-    if center_check == 0:
-        c.executemany(
-            "INSERT INTO sorting_centers (center_name, location) VALUES (%s,%s)",
-            [
-                ('ศูนย์มหาสารคาม', 'มหาสารคาม'),
-                ('ศูนย์ขอนแก่น', 'ขอนแก่น'),
-                ('ศูนย์กรุงเทพ', 'กรุงเทพ')
-            ]
-        )
+    c.execute("""
+        INSERT INTO sorting_centers (center_name, location)
+        VALUES
+        ('ศูนย์มหาสารคาม','มหาสารคาม'),
+        ('ศูนย์ขอนแก่น','ขอนแก่น'),
+        ('ศูนย์กรุงเทพ','กรุงเทพ')
+        ON CONFLICT DO NOTHING
+    """)
 
     conn.commit()
     conn.close()
