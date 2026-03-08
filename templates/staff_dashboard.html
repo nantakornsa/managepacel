@@ -110,6 +110,31 @@
   background: #d71920;
   color: white;
 }
+
+/* 📷 ปุ่มสแกน QR */
+.scan-btn {
+  display: inline-block;
+  background: #d71920;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.scan-btn:hover {
+  background: #b5151b;
+  transform: scale(1.05);
+}
+
+/* จัดตำแหน่งปุ่ม */
+.scan-box {
+  text-align: center;
+  margin-bottom: 15px;
+}
   </style>
 </head>
 
@@ -154,9 +179,11 @@ window.location.href = qrCodeMessage
 
   <h1>📦 รายการพัสดุทั้งหมด</h1>
 
-  <a href="/scan_qr">
-  <button>📷 สแกน QR</button>
-  </a>
+  <div class="scan-box">
+    <a href="/scan_qr" class="scan-btn">
+    📷 สแกน QR
+    </a>
+  </div>
 
 <div id="reader" style="width:300px; margin:20px auto;"></div>
 
