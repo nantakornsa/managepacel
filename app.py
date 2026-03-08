@@ -6,6 +6,7 @@ import qrcode
 from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
 import psycopg
+import psycopg.rows
 
 app = Flask(__name__)
 app.secret_key = 'autoproject2026'  # ใช้ session ต้องมี key
@@ -16,11 +17,11 @@ app.secret_key = 'autoproject2026'  # ใช้ session ต้องมี key
 # -----------------------------
 def get_db_connection():
     DATABASE_URL = os.environ.get("DATABASE_URL")
-    
+
     if DATABASE_URL:
         conn = psycopg.connect(DATABASE_URL)
+        conn.row_factory = psycopg.rows.dict_row
     else:
-        import sqlite3
         conn = sqlite3.connect("parcel_management.db")
         conn.row_factory = sqlite3.Row
 
@@ -87,7 +88,7 @@ def register():
             flash('✅ สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ', 'success')
             return redirect(url_for('login'))
 
-        except sqlite3.IntegrityError:
+        except Exception:
             flash('❌ ชื่อผู้ใช้นี้มีอยู่แล้ว', 'danger')
 
         finally:
@@ -108,7 +109,7 @@ def login():
 
         conn = get_db_connection()
         user = conn.execute(
-            'SELECT * FROM users WHERE username = ?', 
+            'SELECT * FROM users WHERE username = %s', 
             (username,)
         ).fetchone()
         conn.close()
@@ -194,7 +195,7 @@ def delete_staff(user_id):
         return redirect(url_for('staff_dashboard'))
 
     conn = get_db_connection()
-    conn.execute("DELETE FROM users WHERE user_id = ?", (user_id,))
+    conn.execute("DELETE FROM users WHERE user_id = %s", (user_id,))
     conn.commit()
     conn.close()
 
@@ -230,7 +231,7 @@ def user_interface():
     FROM parcels p
     LEFT JOIN parcel_status ps 
     ON p.current_status_id = ps.status_id
-    WHERE p.sender_id = ?
+    WHERE p.sender_id = %s
     ORDER BY p.parcel_id DESC
     '''
 
@@ -352,25 +353,38 @@ def add_parcel():
         c = conn.cursor()
 
         # 1️⃣ เพิ่มผู้ส่ง
-        c.execute('INSERT INTO customers (customer_name, phone, email, address) VALUES (%s, %s, %s, %s)',
-                  (s_name, s_phone, s_email, s_address))
-        sender_id = c.lastrowid
+        c.execute('''
+            INSERT INTO customers (customer_name, phone, email, address)
+            VALUES (%s, %s, %s, %s)
+            RETURNING customer_id
+        ''',
+            (s_name, s_phone, s_email, s_address))
+
+        sender_id = c.fetchone()[0]
 
         # 2️⃣ เพิ่มผู้รับ
-        c.execute('INSERT INTO receivers (receiver_name, phone, email, address) VALUES (%s, %s, %s, %s)',
-                  (r_name, r_phone, r_email, r_address))
-        receiver_id = c.lastrowid
+        c.execute('''
+            INSERT INTO receivers (receiver_name, phone, email, address)
+            VALUES (%s, %s, %s, %s)
+            RETURNING receiver_id
+        ''',
+            (r_name, r_phone, r_email, r_address))
+
+        receiver_id = c.fetchone()[0]
 
        # 3️⃣ เพิ่มพัสดุ
         # 🔐 สร้าง token สุ่ม 32 ตัวอักษร (ปลอดภัยมาก)
         token = secrets.token_hex(16)
 
-        c.execute('''INSERT INTO parcels (sender_id, receiver_id, tracking_number, weight, size, destination, current_status_id, current_center_id, access_token)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''',
-                (sender_id, receiver_id, tracking_number, weight, size, destination, status_id, center_id, token)
-        )
+        c.execute('''
+            INSERT INTO parcels
+            (sender_id, receiver_id, tracking_number, weight, size, destination, current_status_id, current_center_id, access_token)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            RETURNING parcel_id
+        ''',
+            (sender_id, receiver_id, tracking_number, weight, size, destination, status_id, center_id, token))
 
-        parcel_id = c.lastrowid
+        parcel_id = c.fetchone()[0]
 
         conn.commit()
         conn.close()
@@ -523,7 +537,7 @@ def save_status(token):
 
      # 🔄 2. อัปเดตสถานะปัจจุบันในตาราง parcels
     c.execute(
-        'UPDATE parcels SET current_status_id = ?, current_center_id = ? WHERE parcel_id = %s',
+        'UPDATE parcels SET current_status_id = %s, current_center_id = %s WHERE parcel_id = %s',
         (status_id, center_id, parcel_id)
     )
 
@@ -554,7 +568,7 @@ def tracking_history(parcel_id):
         FROM parcels p
         JOIN customers c ON p.sender_id = c.customer_id
         JOIN receivers r ON p.receiver_id = r.receiver_id
-        WHERE p.parcel_id = ?
+        WHERE p.parcel_id = %s
     ''', (parcel_id,)).fetchone()
 
     # ดึงข้อมูลการเคลื่อนไหวทั้งหมดจาก tracking_events
@@ -563,7 +577,7 @@ def tracking_history(parcel_id):
         FROM tracking_events t
         JOIN parcel_status ps ON t.status_id = ps.status_id
         JOIN sorting_centers sc ON t.center_id = sc.center_id
-        WHERE t.parcel_id = ?
+        WHERE t.parcel_id = %s
         ORDER BY t.timestamp ASC
     ''', (parcel_id,)).fetchall()
 
@@ -586,7 +600,6 @@ def generate_qr(tracking_number):
 
     token = parcel['access_token']
 
-    from flask import request
     qr_url = f"https://manageparcel.onrender.com/update_status/{token}"
 
     img = qrcode.make(qr_url)
@@ -627,4 +640,4 @@ def tracking_by_number(tracking_number):
 # -----------------------------
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=True)
