@@ -1,245 +1,292 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
-  <meta charset="UTF-8" />
-  <title>รายการพัสดุทั้งหมด</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      color: #d71920;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: white;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    th, td {
-      padding: 12px;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
-    }
-    th {
-      background: #d71920;
-      color: white;
-    }
-    tr:hover {background-color: #f1f1f1;}
-    .empty {
-      text-align: center;
-      margin-top: 50px;
-      color: gray;
-    }
-    .add-btn {
-      display: inline-block;
-      background: #d71920;
-      color: white;
-      padding: 10px 15px;
-      text-decoration: none;
-      border-radius: 5px;
-      margin-bottom: 10px;
-    }
-
-    /* 🔍 ช่องค้นหา */
-    .search-box {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-    .search-box input[type="text"] {
-      padding: 8px;
-      width: 250px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    .search-box button {
-      padding: 8px 12px;
-      background: #d71920;
-      border: none;
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .search-box a {
-      margin-left: 10px;
-      color: #d71920;
-      text-decoration: none;
-      font-size: 14px;
-    }
-
-    /* 🎯 ปุ่มอัปเดตสถานะ และดูประวัติ */
-    .action-btn {
-      padding: 6px 10px;
-      border-radius: 5px;
-      text-decoration: none;
-      font-size: 14px;
-      color: white;
-    }
-    .history-btn {
-      background: #d71920; /* แดง */
-      margin-left: 5px;
-    }
-    /* 🔓 Top bar + Logout */
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.user-info {
-  font-size: 14px;
-}
-
-.logout-btn {
-  background: white;
-  color: #d71920;
-  border: 2px solid #d71920;
-  padding: 6px 12px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.logout-btn:hover {
-  background: #d71920;
-  color: white;
-}
-
-/* 📷 ปุ่มสแกน QR */
-.scan-btn {
-  display: inline-block;
-  background: #d71920;
-  color: white;
-  padding: 10px 18px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: bold;
-  border: none;
-  cursor: pointer;
-  font-size: 15px;
-}
-
-.scan-btn:hover {
-  background: #b5151b;
-  transform: scale(1.05);
-}
-
-/* จัดตำแหน่งปุ่ม */
-.scan-box {
-  text-align: center;
-  margin-bottom: 15px;
-}
-  </style>
-</head>
+<meta charset="UTF-8">
+<title>รายการพัสดุทั้งหมด</title>
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 
-<script>
+<style>
 
-function startScanner(){
-
-const html5QrCode = new Html5Qrcode("reader");
-
-html5QrCode.start(
-{ facingMode: "environment" }, // ใช้กล้องหลัง
-{
-fps: 10,
-qrbox: 250
-},
-
-// เมื่อสแกนสำเร็จ
-(qrCodeMessage) => {
-
-window.location.href = qrCodeMessage
-
-},
-
-(errorMessage) => {
+/* -------------------------
+   โครงสร้างหลัก
+-------------------------*/
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f4f4;
+    margin:0;
+    padding:20px;
 }
 
-);
+h1{
+    text-align:center;
+    color:#d71920;
+}
+
+/* -------------------------
+   Top Bar
+-------------------------*/
+.top-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+}
+
+.user-info{
+    font-size:14px;
+}
+
+.logout-btn{
+    background:white;
+    color:#d71920;
+    border:2px solid #d71920;
+    padding:6px 12px;
+    border-radius:6px;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.logout-btn:hover{
+    background:#d71920;
+    color:white;
+}
+
+/* -------------------------
+   ปุ่ม
+-------------------------*/
+.add-btn{
+    display:inline-block;
+    background:#d71920;
+    color:white;
+    padding:10px 15px;
+    text-decoration:none;
+    border-radius:5px;
+    margin-bottom:10px;
+}
+
+.action-btn{
+    padding:6px 10px;
+    border-radius:5px;
+    text-decoration:none;
+    font-size:14px;
+    color:white;
+}
+
+.history-btn{
+    background:#d71920;
+}
+
+/* -------------------------
+   ตาราง
+-------------------------*/
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+    background:white;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+th,td{
+    padding:12px;
+    border-bottom:1px solid #ddd;
+    text-align:left;
+}
+
+th{
+    background:#d71920;
+    color:white;
+}
+
+tr:hover{
+    background:#f1f1f1;
+}
+
+/* -------------------------
+   Search Box
+-------------------------*/
+.search-box{
+    text-align:center;
+    margin-bottom:15px;
+}
+
+.search-box input{
+    padding:8px;
+    width:250px;
+    border:1px solid #ccc;
+    border-radius:5px;
+}
+
+.search-box button{
+    padding:8px 12px;
+    background:#d71920;
+    border:none;
+    color:white;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.search-box a{
+    margin-left:10px;
+    color:#d71920;
+    text-decoration:none;
+    font-size:14px;
+}
+
+/* -------------------------
+   Empty Data
+-------------------------*/
+.empty{
+    text-align:center;
+    margin-top:50px;
+    color:gray;
+}
+
+</style>
+
+
+<script>
+
+/* -------------------------
+   QR Scanner
+-------------------------*/
+function startScanner(){
+
+    const html5QrCode = new Html5Qrcode("reader");
+
+    html5QrCode.start(
+        { facingMode:"environment" },
+        { fps:10, qrbox:250 },
+
+        (qrCodeMessage)=>{
+            window.location.href = qrCodeMessage
+        },
+
+        (errorMessage)=>{
+        }
+    )
 
 }
 
 </script>
 
+</head>
+
+
 <body>
-  <div class="top-bar">
-  <div class="user-info">
-    👤 {{ session['username'] }}
-  </div>
-  <a href="/logout" class="logout-btn">🚪 Logout</a>
+
+<!-- Top Bar -->
+<div class="top-bar">
+
+    <div class="user-info">
+        👤 {{ session['username'] }}
+    </div>
+
+    <a href="/logout" class="logout-btn">
+        🚪 Logout
+    </a>
+
 </div>
 
-  <h1>📦 รายการพัสดุทั้งหมด</h1>
 
-  <div class="scan-box">
-    <a href="/scan_qr" class="scan-btn">
-    📷 สแกน QR
+<h1>📦 รายการพัสดุทั้งหมด</h1>
+
+
+<div style="text-align:center; margin-bottom:10px;">
+    <a href="/scan_qr">
+        <button>📷 สแกน QR</button>
     </a>
-  </div>
+</div>
+
 
 <div id="reader" style="width:300px; margin:20px auto;"></div>
 
-  <!-- ✅ ช่องค้นหา -->
-  <div class="search-box">
-    <form action="{{ url_for('search') }}" method="get" style="display:inline-block;">
-      <input type="text" name="q" placeholder="ค้นหาเลขพัสดุ / ผู้ส่ง / ผู้รับ"
-             value="{{ keyword if keyword else '' }}">
-      <button type="submit">ค้นหา</button>
-    </form>
-    <a href="{{ url_for('staff_dashboard') }}">ดูทั้งหมด</a>
-  </div>
 
-  <div style="text-align:center;">
-    <a href="{{ url_for('add_parcel') }}" class="add-btn">➕ เพิ่มพัสดุใหม่</a>
-  </div>
+<!-- Search -->
+<div class="search-box">
 
-  {% if parcels %}
-  <table>
-    <tr>
-      <th>Tracking No.</th>
-      <th>ผู้ส่ง</th>
-      <th>ผู้รับ</th>
-      <th>ปลายทาง</th>
-      <th>น้ำหนัก</th>
-      <th>ขนาด</th>
-      <th>สถานะ</th>
-      <th>อัพเดท</th>
-      <th>ข้อมูลสถานะ</th>
-    </tr>
-    {% for p in parcels %}
-    <tr>
-      <td>{{ p['tracking_number'] }}</td>
-      <td>{{ p['sender_name'] }}</td>
-      <td>{{ p['receiver_name'] }}</td>
-      <td>{{ p['destination'] }}</td>
-      <td>{{ p['weight'] or '-' }}</td>
-      <td>{{ p['size'] or '-' }}</td>
-      <td>{{ p['status_name'] or 'ยังไม่มีสถานะ' }}</td>
+<form action="{{ url_for('search') }}" method="get" style="display:inline-block;">
 
-      <td>
-      <img src="{{ url_for('static', filename='qr/' + p['tracking_number'] + '.png') }}" width="80">
-      </td>
+<input 
+type="text"
+name="q"
+placeholder="ค้นหาเลขพัสดุ / ผู้ส่ง / ผู้รับ"
+value="{{ keyword if keyword else '' }}"
+>
 
-      <!-- ✅ ปุ่มอัปเดตสถานะ + ดูประวัติ -->
-      <td>
-        <a href="{{ url_for('tracking_history', parcel_id=p['parcel_id']) }}" 
-        class="action-btn history-btn">
-        ดูประวัติ</a>
-      </td>
-    </tr>
-    {% endfor %}
-  </table>
-  {% else %}
-    <p class="empty">ยังไม่มีข้อมูลพัสดุในระบบ</p>
-  {% endif %}
+<button type="submit">ค้นหา</button>
+
+</form>
+
+<a href="{{ url_for('staff_dashboard') }}">
+ดูทั้งหมด
+</a>
+
+</div>
+
+
+<!-- Add Parcel -->
+<div style="text-align:center;">
+<a href="{{ url_for('add_parcel') }}" class="add-btn">
+➕ เพิ่มพัสดุใหม่
+</a>
+</div>
+
+
+{% if parcels %}
+
+<table>
+
+<tr>
+<th>Tracking No.</th>
+<th>ผู้ส่ง</th>
+<th>ผู้รับ</th>
+<th>ปลายทาง</th>
+<th>น้ำหนัก</th>
+<th>ขนาด</th>
+<th>สถานะ</th>
+<th>QR</th>
+<th>ข้อมูลสถานะ</th>
+</tr>
+
+{% for p in parcels %}
+
+<tr>
+
+<td>{{ p['tracking_number'] }}</td>
+<td>{{ p['sender_name'] }}</td>
+<td>{{ p['receiver_name'] }}</td>
+<td>{{ p['destination'] }}</td>
+<td>{{ p['weight'] or '-' }}</td>
+<td>{{ p['size'] or '-' }}</td>
+<td>{{ p['status_name'] or 'ยังไม่มีสถานะ' }}</td>
+
+<td>
+<img src="{{ url_for('static', filename='qr/' + p['tracking_number'] + '.png') }}" width="80">
+</td>
+
+<td>
+<a href="{{ url_for('tracking_history', parcel_id=p['parcel_id']) }}"
+class="action-btn history-btn">
+ดูประวัติ
+</a>
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% else %}
+
+<p class="empty">
+ยังไม่มีข้อมูลพัสดุในระบบ
+</p>
+
+{% endif %}
 
 </body>
 </html>
