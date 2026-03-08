@@ -18,12 +18,8 @@ app.secret_key = 'autoproject2026'  # ใช้ session ต้องมี key
 def get_db_connection():
     DATABASE_URL = os.environ.get("DATABASE_URL")
 
-    if DATABASE_URL:
-        conn = psycopg.connect(DATABASE_URL)
-        conn.row_factory = psycopg.rows.dict_row
-    else:
-        conn = sqlite3.connect("parcel_management.db")
-        conn.row_factory = sqlite3.Row
+    conn = psycopg.connect(DATABASE_URL)
+    conn.row_factory = psycopg.rows.dict_row
 
     return conn
 
