@@ -387,7 +387,9 @@ def add_parcel():
 # -----------------------------
 # ✅ สร้าง QR อัตโนมัติ
 # -----------------------------
-        qr_url = f"https://manageparcel.onrender.com/update_status/{token}"
+        from flask import request
+
+        qr_url = request.host_url + "update_status/" + token
 
         img = qrcode.make(qr_url)
 
