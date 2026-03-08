@@ -264,7 +264,9 @@ value="{{ keyword if keyword else '' }}"
 <td>{{ p['status_name'] or 'ยังไม่มีสถานะ' }}</td>
 
 <td>
-<img src="{{ url_for('qr_code', tracking_number=p['tracking_number']) }}" width="80">
+    <a href="{{ url_for('qr_code', tracking_number=p['tracking_number']) }}" target="_blank">
+    <img src="{{ url_for('qr_code', tracking_number=p['tracking_number']) }}" width="80">
+    </a>
 </td>
 
 <td>

@@ -7,6 +7,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
 import psycopg
 import psycopg.rows
+from flask import send_file
+import io
 
 app = Flask(__name__)
 app.secret_key = 'autoproject2026'  # ใช้ session ต้องมี key
@@ -387,7 +389,7 @@ def add_parcel():
 # -----------------------------
 # ✅ สร้าง QR อัตโนมัติ
 # -----------------------------
-        qr_url = request.host_url + "update_status/" + token
+        qr_url = qr_url = url_for('update_status', token=token, _external=True)
 
         img = qrcode.make(qr_url)
 
@@ -634,6 +636,31 @@ def tracking_by_number(tracking_number):
 @app.route('/scan_qr')
 def scan_qr():
     return render_template('scan_qr.html')
+
+@app.route('/qr/<tracking_number>')
+def qr_code(tracking_number):
+
+    conn = get_db_connection()
+    parcel = conn.execute(
+        'SELECT access_token FROM parcels WHERE tracking_number = %s',
+        (tracking_number,)
+    ).fetchone()
+    conn.close()
+
+    if not parcel:
+        return "QR not found"
+
+    token = parcel['access_token']
+
+    qr_url = qr_url = url_for('update_status', token=token, _external=True)
+
+    img = qrcode.make(qr_url)
+
+    buf = io.BytesIO()
+    img.save(buf)
+    buf.seek(0)
+
+    return send_file(buf, mimetype='image/png')
 
 # -----------------------------
 # เริ่มรันเว็บ
