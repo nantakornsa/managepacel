@@ -23,35 +23,6 @@ def get_db_connection():
 
     return conn
 
-# -----------------------------
-# เพิ่มข้อมูลเริ่มต้นอัตโนมัติ
-# -----------------------------
-def init_default_data():
-    conn = get_db_connection()
-    c = conn.cursor()
-
-    c.execute("""
-        INSERT INTO parcel_status (status_name)
-        VALUES
-        ('รับเข้าระบบแล้ว'),
-        ('กำลังจัดส่ง'),
-        ('จัดส่งสำเร็จ')
-        ON CONFLICT DO NOTHING
-    """)
-
-    c.execute("""
-        INSERT INTO sorting_centers (center_name, location)
-        VALUES
-        ('ศูนย์มหาสารคาม','มหาสารคาม'),
-        ('ศูนย์ขอนแก่น','ขอนแก่น'),
-        ('ศูนย์กรุงเทพ','กรุงเทพ')
-        ON CONFLICT DO NOTHING
-    """)
-
-    conn.commit()
-    conn.close()
-
-
 # =============================
 # 🔹 ระบบล็อกอินจริง (ใหม่)
 # =============================
@@ -663,6 +634,5 @@ def tracking_by_number(tracking_number):
 # เริ่มรันเว็บ
 # -----------------------------
 if __name__ == '__main__':
-    init_default_data()
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
