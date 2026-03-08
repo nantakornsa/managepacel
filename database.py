@@ -1,12 +1,15 @@
-import sqlite3
+import psycopg2
+import os
 
-conn = sqlite3.connect('parcel_management.db')
-c = conn.cursor()
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
-c.executescript('''
+conn = psycopg2.connect(DATABASE_URL)
+cur = conn.cursor()
+
+cur.executescript('''
 -- ตารางลูกค้า (ผู้ส่ง)
 CREATE TABLE IF NOT EXISTS customers (
-    customer_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id SERIAL PRIMARY KEY,
     customer_name TEXT NOT NULL,
     phone TEXT,
     email TEXT,
@@ -15,7 +18,7 @@ CREATE TABLE IF NOT EXISTS customers (
 
 -- ตารางผู้รับ
 CREATE TABLE IF NOT EXISTS receivers (
-    receiver_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    receiver_id SERIAL PRIMARY KEY,
     receiver_name TEXT NOT NULL,
     phone TEXT,
     email TEXT,
@@ -24,7 +27,7 @@ CREATE TABLE IF NOT EXISTS receivers (
 
 -- ตารางพัสดุ
 CREATE TABLE IF NOT EXISTS parcels (
-    parcel_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    parcel_id SERIAL PRIMARY KEY,
     sender_id INTEGER NOT NULL,
     receiver_id INTEGER NOT NULL,
     tracking_number TEXT UNIQUE NOT NULL,
@@ -41,7 +44,7 @@ CREATE TABLE IF NOT EXISTS parcels (
 
 -- ตารางคนขับ
 CREATE TABLE IF NOT EXISTS drivers (
-    driver_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    driver_id SERIAL PRIMARY KEY,
     driver_name TEXT NOT NULL,
     phone TEXT,
     license_plate TEXT,
@@ -51,20 +54,20 @@ CREATE TABLE IF NOT EXISTS drivers (
 
 -- ตารางศูนย์คัดแยก
 CREATE TABLE IF NOT EXISTS sorting_centers (
-    center_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    center_id SERIAL PRIMARY KEY,
     center_name TEXT NOT NULL,
     location TEXT
 );
 
 -- ตารางสถานะพัสดุ
 CREATE TABLE IF NOT EXISTS parcel_status (
-    status_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    status_id SERIAL PRIMARY KEY,
     status_name TEXT NOT NULL
 );
 
 -- ตารางบันทึกเหตุการณ์ (Tracking Event)
 CREATE TABLE IF NOT EXISTS tracking_events (
-    event_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_id SERIAL PRIMARY KEY,
     parcel_id INTEGER NOT NULL,
     status_id INTEGER NOT NULL,
     center_id INTEGER,
@@ -80,7 +83,7 @@ CREATE TABLE IF NOT EXISTS tracking_events (
 );
 
 CREATE TABLE IF NOT EXISTS users (
-    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id SERIAL PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     role TEXT DEFAULT 'user'
@@ -88,6 +91,7 @@ CREATE TABLE IF NOT EXISTS users (
 ''')
 
 conn.commit()
+cur.close()
 conn.close()
 
 print("✅ สร้างฐานข้อมูลเรียบร้อยแล้ว!")

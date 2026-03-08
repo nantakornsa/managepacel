@@ -75,8 +75,8 @@ text-decoration:none;
 </div>
 
 <div>
-สวัสดี {{ username }} |
-<a class="logout" href="/logout.html">Logout</a>
+สวัสดี {{ session.get('username') }} |
+<a class="logout" href="{{ url_for('logout') }}">Logout</a>
 </div>
 
 </header>

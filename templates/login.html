@@ -49,7 +49,7 @@ button{
   {% endif %}
 {% endwith %}
 
-<form method="POST" action="/login.html">
+<form method="POST" action="{{ url_for('login') }}">
   <input type="text" name="username" placeholder="Username" required>
   <input type="password" name="password" placeholder="Password" required>
   <button type="submit">Login</button>
@@ -57,7 +57,7 @@ button{
 
 <div class="link">
   ยังไม่มีบัญชี?
-  <a href="/register.html">สมัครสมาชิก</a>
+  <a href="{{ url_for('register') }}">สมัครสมาชิก</a>
 </div>
 
 </div>

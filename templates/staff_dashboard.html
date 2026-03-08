@@ -118,7 +118,7 @@
   <div class="user-info">
     👤 {{ session['username'] }}
   </div>
-  <a href="/logout.html" class="logout-btn">🚪 Logout</a>
+  <a href="/logout" class="logout-btn">🚪 Logout</a>
 </div>
 
 
@@ -126,16 +126,16 @@
 
   <!-- ✅ ช่องค้นหา -->
   <div class="search-box">
-    <form action="/search" method="get" style="display:inline-block;">
+    <form action="{{ url_for('search') }}" method="get" style="display:inline-block;">
       <input type="text" name="q" placeholder="ค้นหาเลขพัสดุ / ผู้ส่ง / ผู้รับ"
              value="{{ keyword if keyword else '' }}">
       <button type="submit">ค้นหา</button>
     </form>
-    <a href="/interface.html">ดูทั้งหมด</a>
+    <a href="{{ url_for('staff_dashboad') }}">ดูทั้งหมด</a>
   </div>
 
   <div style="text-align:center;">
-    <a href="/add_parcel" class="add-btn">➕ เพิ่มพัสดุใหม่</a>
+    <a href="{{ url_for('add_parcel') }}" class="add-btn">➕ เพิ่มพัสดุใหม่</a>
   </div>
 
   {% if parcels %}
@@ -167,7 +167,7 @@
 
       <!-- ✅ ปุ่มอัปเดตสถานะ + ดูประวัติ -->
       <td>
-        <a href="/tracking/{{ p['parcel_id'] }}" class="action-btn history-btn">ดูประวัติ</a>
+        <a href="{{ url_for('tracking', parcel_id=p['parcel_id']) }}"> class="action-btn history-btn">ดูประวัติ</a>
       </td>
     </tr>
     {% endfor %}

@@ -5,7 +5,7 @@ import re
 import qrcode
 from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
-
+import psycopg2
 
 app = Flask(__name__)
 app.secret_key = 'autoproject2026'  # ใช้ session ต้องมี key
@@ -15,8 +15,7 @@ app.secret_key = 'autoproject2026'  # ใช้ session ต้องมี key
 # ฟังก์ชันเชื่อมฐานข้อมูล
 # -----------------------------
 def get_db_connection():
-    conn = sqlite3.connect('parcel_management.db')
-    conn.row_factory = sqlite3.Row  # ให้ผลลัพธ์อ่านเป็นชื่อคอลัมน์ได้
+    conn = psycopg2.connect(os.environ["DATABASE_URL"])
     return conn
 
 
