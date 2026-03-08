@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS parcels (
     destination TEXT,
     current_status_id INTEGER,
     current_center_id INTEGER,
+    access_token TEXT UNIQUE,
     FOREIGN KEY (sender_id) REFERENCES customers(customer_id),
     FOREIGN KEY (receiver_id) REFERENCES receivers(receiver_id),
     FOREIGN KEY (current_status_id) REFERENCES parcel_status(status_id),

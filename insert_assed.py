@@ -1,8 +1,10 @@
-import sqlite3
+import psycopg2
+import os
 
-# เชื่อมต่อฐานข้อมูล
-conn = sqlite3.connect("parcel_management.db")
-cursor = conn.cursor()
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+conn = psycopg2.connect(DATABASE_URL)
+cur = conn.cursor()
 
 try:
     # เพิ่มคอลัมน์ access_token

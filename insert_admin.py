@@ -8,7 +8,7 @@ DATABASE_URL = "postgresql://parcel_user:lBif77XAZLy40ghsUsRIs4XaC5SMb3RC@dpg-d6
 conn = psycopg2.connect(DATABASE_URL)
 cur = conn.cursor()
 
-username = "admin"
+username = "admin1"
 password = "admin123"
 
 password_hash = generate_password_hash(password)

@@ -1,7 +1,10 @@
-import sqlite3
+import psycopg2
+import os
 
-conn = sqlite3.connect('parcel_management.db')
-c = conn.cursor()
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+conn = psycopg2.connect(DATABASE_URL)
+cur = conn.cursor()
 
 # เพิ่มข้อมูลสถานะเริ่มต้น 3 สถานะ
 c.executemany("INSERT INTO parcel_status (status_name) VALUES (?)", [
