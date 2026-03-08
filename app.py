@@ -591,7 +591,8 @@ def generate_qr(tracking_number):
     conn.close()
 
     if not parcel:
-        return "❌ ไม่พบพัสดุ"
+        flash("❌ ไม่พบเลขพัสดุ", "danger")
+        return redirect(url_for('user_interface'))
 
     token = parcel['access_token']
 
@@ -629,6 +630,10 @@ def tracking_by_number(tracking_number):
         return redirect(url_for('tracking_history', parcel_id=parcel['parcel_id']))
     else:
         return "❌ ไม่พบข้อมูลพัสดุ"
+    
+@app.route('/scan_qr')
+def scan_qr():
+    return render_template('scan_qr.html')
 
 # -----------------------------
 # เริ่มรันเว็บ
