@@ -387,8 +387,6 @@ def add_parcel():
 # -----------------------------
 # ✅ สร้าง QR อัตโนมัติ
 # -----------------------------
-        from flask import request
-
         qr_url = request.host_url + "update_status/" + token
 
         img = qrcode.make(qr_url)
