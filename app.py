@@ -390,7 +390,7 @@ def add_parcel():
         ''',
             (s_name, s_phone, s_email, s_address))
 
-        sender_id = c.fetchone()[0]
+        sender_id = c.fetchone()['customer_id']
 
         # 2️⃣ เพิ่มผู้รับ
         c.execute('''
@@ -400,7 +400,7 @@ def add_parcel():
         ''',
             (r_name, r_phone, r_email, r_address))
 
-        receiver_id = c.fetchone()[0]
+        receiver_id = c.fetchone()['receiver_id']
 
        # 3️⃣ เพิ่มพัสดุ
         # 🔐 สร้าง token สุ่ม 32 ตัวอักษร (ปลอดภัยมาก)
@@ -414,7 +414,7 @@ def add_parcel():
         ''',
             (sender_id, receiver_id, tracking_number, weight, size, destination, status_id, center_id, token))
 
-        parcel_id = c.fetchone()[0]
+        parcel_id = c.fetchone()['parcel_id']
 
         conn.commit()
         conn.close()
