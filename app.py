@@ -15,7 +15,15 @@ app.secret_key = 'autoproject2026'  # ใช้ session ต้องมี key
 # ฟังก์ชันเชื่อมฐานข้อมูล
 # -----------------------------
 def get_db_connection():
-    conn = psycopg2.connect(os.environ["DATABASE_URL"])
+    DATABASE_URL = os.environ.get("DATABASE_URL")
+    
+    if DATABASE_URL:
+        conn = psycopg2.connect(DATABASE_URL)
+    else:
+        import sqlite3
+        conn = sqlite3.connect("parcel_management.db")
+        conn.row_factory = sqlite3.Row
+
     return conn
 
 
@@ -72,7 +80,7 @@ def register():
 
         try:
             c.execute(
-                'INSERT INTO users (username, password_hash) VALUES (?, ?)',
+                'INSERT INTO users (username, password_hash) VALUES (%s, %s)',
                 (username, password_hash)
             )
             conn.commit()
@@ -129,7 +137,7 @@ def login():
 
 
 # ออกจากระบบ
-@app.route('/logout.html')
+@app.route('/logout')
 def logout():
     session.clear()
     flash('ออกจากระบบเรียบร้อยแล้ว', 'info')
@@ -168,7 +176,7 @@ def add_staff():
     password_hash = generate_password_hash(password)
 
     c.execute(
-        "INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)",
+        "INSERT INTO users (username, password_hash, role) VALUES (%s, %s, %s)",
         (username, password_hash, 'staff')
     )
 
@@ -344,12 +352,12 @@ def add_parcel():
         c = conn.cursor()
 
         # 1️⃣ เพิ่มผู้ส่ง
-        c.execute('INSERT INTO customers (customer_name, phone, email, address) VALUES (?, ?, ?, ?)',
+        c.execute('INSERT INTO customers (customer_name, phone, email, address) VALUES (%s, %s, %s, %s)',
                   (s_name, s_phone, s_email, s_address))
         sender_id = c.lastrowid
 
         # 2️⃣ เพิ่มผู้รับ
-        c.execute('INSERT INTO receivers (receiver_name, phone, email, address) VALUES (?, ?, ?, ?)',
+        c.execute('INSERT INTO receivers (receiver_name, phone, email, address) VALUES (%s, %s, %s, %s)',
                   (r_name, r_phone, r_email, r_address))
         receiver_id = c.lastrowid
 
@@ -358,7 +366,7 @@ def add_parcel():
         token = secrets.token_hex(16)
 
         c.execute('''INSERT INTO parcels (sender_id, receiver_id, tracking_number, weight, size, destination, current_status_id, current_center_id, access_token)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''',
                 (sender_id, receiver_id, tracking_number, weight, size, destination, status_id, center_id, token)
         )
 
@@ -415,19 +423,20 @@ def search():
     conn = get_db_connection()
     query = """
         SELECT 
+            p.parcel_id,
             p.tracking_number, 
-            c.customer_name AS sender, 
-            r.receiver_name AS receiver, 
-            ps.status_name AS status, 
+            c.customer_name AS sender_name, 
+            r.receiver_name AS receiver_name, 
+            ps.status_name AS status_name, 
             p.destination
         FROM parcels p
         JOIN customers c ON p.sender_id = c.customer_id
         JOIN receivers r ON p.receiver_id = r.receiver_id
         JOIN parcel_status ps ON p.current_status_id = ps.status_id
-        WHERE p.tracking_number LIKE ? 
-           OR c.customer_name LIKE ? 
-           OR r.receiver_name LIKE ?
-    """
+        WHERE p.tracking_number LIKE %s
+            OR c.customer_name LIKE %s
+            OR r.receiver_name LIKE %s
+        """
     # ใช้ f'%{keyword}%' เพื่อค้นหาคำที่คล้ายๆ กัน (ไม่ต้องตรงทั้งหมด)
     parcels = conn.execute(query, (f'%{keyword}%', f'%{keyword}%', f'%{keyword}%')).fetchall()
     conn.close()
@@ -456,7 +465,7 @@ def update_status(token):
 
     conn = get_db_connection()
     parcel = conn.execute(
-        'SELECT * FROM parcels WHERE access_token = ?',
+        'SELECT * FROM parcels WHERE access_token = %s',
         (token,)
     ).fetchone()
     
@@ -502,7 +511,7 @@ def save_status(token):
 
        # 🔎 1. หา parcel_id จาก token ก่อน
     parcel = conn.execute(
-        'SELECT parcel_id FROM parcels WHERE access_token = ?',
+        'SELECT parcel_id FROM parcels WHERE access_token = %s',
         (token,)
     ).fetchone()
 
@@ -514,7 +523,7 @@ def save_status(token):
 
      # 🔄 2. อัปเดตสถานะปัจจุบันในตาราง parcels
     c.execute(
-        'UPDATE parcels SET current_status_id = ?, current_center_id = ? WHERE parcel_id = ?',
+        'UPDATE parcels SET current_status_id = ?, current_center_id = ? WHERE parcel_id = %s',
         (status_id, center_id, parcel_id)
     )
 
@@ -522,7 +531,7 @@ def save_status(token):
     c.execute('''
         INSERT INTO tracking_events
         (parcel_id, status_id, center_id, note, updated_by, updated_role)
-        VALUES (?, ?, ?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s, %s, %s)
     ''', (parcel_id, status_id, center_id, note, updated_by, updated_role))
 
     conn.commit()
@@ -567,7 +576,7 @@ def generate_qr(tracking_number):
 
     conn = get_db_connection()
     parcel = conn.execute(
-        'SELECT access_token FROM parcels WHERE tracking_number = ?',
+        'SELECT access_token FROM parcels WHERE tracking_number = %s',
         (tracking_number,)
     ).fetchone()
     conn.close()
@@ -602,7 +611,7 @@ def tracking_by_number(tracking_number):
     conn = get_db_connection()
 
     parcel = conn.execute(
-        'SELECT parcel_id FROM parcels WHERE tracking_number = ?',
+        'SELECT parcel_id FROM parcels WHERE tracking_number = %s',
         (tracking_number,)
     ).fetchone()
 

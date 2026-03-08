@@ -113,6 +113,37 @@
   </style>
 </head>
 
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<script>
+
+function startScanner(){
+
+const html5QrCode = new Html5Qrcode("reader");
+
+html5QrCode.start(
+{ facingMode: "environment" }, // ใช้กล้องหลัง
+{
+fps: 10,
+qrbox: 250
+},
+
+// เมื่อสแกนสำเร็จ
+(qrCodeMessage) => {
+
+window.location.href = qrCodeMessage
+
+},
+
+(errorMessage) => {
+}
+
+);
+
+}
+
+</script>
+
 <body>
   <div class="top-bar">
   <div class="user-info">
@@ -124,6 +155,16 @@
 
   <h1>📦 รายการพัสดุทั้งหมด</h1>
 
+
+
+  <div style="text-align:center; margin-top:10px;">
+  <button onclick="startScanner()" class="add-btn">
+    📷 สแกน QR Code
+  </button>
+</div>
+
+<div id="reader" style="width:300px; margin:20px auto;"></div>
+
   <!-- ✅ ช่องค้นหา -->
   <div class="search-box">
     <form action="{{ url_for('search') }}" method="get" style="display:inline-block;">
@@ -131,7 +172,7 @@
              value="{{ keyword if keyword else '' }}">
       <button type="submit">ค้นหา</button>
     </form>
-    <a href="{{ url_for('staff_dashboad') }}">ดูทั้งหมด</a>
+    <a href="{{ url_for('staff_dashboard') }}">ดูทั้งหมด</a>
   </div>
 
   <div style="text-align:center;">
@@ -167,7 +208,9 @@
 
       <!-- ✅ ปุ่มอัปเดตสถานะ + ดูประวัติ -->
       <td>
-        <a href="{{ url_for('tracking', parcel_id=p['parcel_id']) }}"> class="action-btn history-btn">ดูประวัติ</a>
+        <a href="{{ url_for('tracking_history', parcel_id=p['parcel_id']) }}" 
+        class="action-btn history-btn">
+        ดูประวัติ</a>
       </td>
     </tr>
     {% endfor %}
