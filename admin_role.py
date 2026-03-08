@@ -1,17 +1,21 @@
-import sqlite3
+import psycopg2
+import os
 from werkzeug.security import generate_password_hash
 
-conn = sqlite3.connect('parcel_management.db')
-c = conn.cursor()
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+conn = psycopg2.connect(DATABASE_URL)
+cur = conn.cursor()
 
 password_hash = generate_password_hash("1234")
 
-c.execute("""
+cur.execute("""
 INSERT INTO users (username, password_hash, role)
-VALUES (?, ?, ?)
+VALUES (%s, %s, %s)
 """, ('admin', password_hash, 'admin'))
 
 conn.commit()
+cur.close()
 conn.close()
 
 print("✅ สร้าง admin ได้แล้ว")

@@ -8,16 +8,17 @@ cur = conn.cursor()
 
 try:
     # เพิ่มคอลัมน์ access_token
-    cursor.execute("""
+    cur.execute("""
         ALTER TABLE parcels 
         ADD COLUMN access_token TEXT
     """)
 
     print("✅ เพิ่มคอลัมน์ access_token สำเร็จ")
 
-except sqlite3.OperationalError as e:
+except Exception as e:
     print("❌ Error:", e)
 
 # บันทึกและปิด
 conn.commit()
+cur.close()
 conn.close()

@@ -6,21 +6,24 @@ DATABASE_URL = os.environ.get("DATABASE_URL")
 conn = psycopg2.connect(DATABASE_URL)
 cur = conn.cursor()
 
-try:
-    # เพิ่ม column ก่อน (ถ้ายังไม่มี)
-    c.execute("ALTER TABLE parcels ADD COLUMN access_token TEXT;")
-    print("✅ เพิ่ม column access_token สำเร็จ")
-except sqlite3.OperationalError:
-    print("⚠️ column access_token มีอยู่แล้ว")
+# เพิ่ม column ถ้ายังไม่มี
+cur.execute("""
+ALTER TABLE parcels
+ADD COLUMN IF NOT EXISTS access_token TEXT;
+""")
 
-# สร้าง unique index แยก (แทน UNIQUE constraint)
-try:
-    c.execute("CREATE UNIQUE INDEX idx_access_token ON parcels(access_token);")
-    print("✅ สร้าง UNIQUE INDEX สำเร็จ")
-except sqlite3.OperationalError:
-    print("⚠️ UNIQUE INDEX มีอยู่แล้ว")
+print("✅ ตรวจสอบ column access_token แล้ว")
+
+# สร้าง unique index ถ้ายังไม่มี
+cur.execute("""
+CREATE UNIQUE INDEX IF NOT EXISTS idx_access_token
+ON parcels(access_token);
+""")
+
+print("✅ ตรวจสอบ UNIQUE INDEX แล้ว")
 
 conn.commit()
+cur.close()
 conn.close()
 
 print("🎉 เสร็จเรียบร้อย!")
