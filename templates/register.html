@@ -110,7 +110,7 @@ button:disabled{
   {% endif %}
 {% endwith %}
 
-<form method="POST" action="/register.html" id="registerForm">
+<form method="POST" action="{{ url_for('register') }}" id="registerForm">
 
   <input type="text" name="username" placeholder="Username" required>
 
