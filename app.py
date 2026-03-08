@@ -5,7 +5,7 @@ import re
 import qrcode
 from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
-import psycopg2
+import psycopg
 
 app = Flask(__name__)
 app.secret_key = 'autoproject2026'  # ใช้ session ต้องมี key
@@ -18,7 +18,7 @@ def get_db_connection():
     DATABASE_URL = os.environ.get("DATABASE_URL")
     
     if DATABASE_URL:
-        conn = psycopg2.connect(DATABASE_URL)
+        conn = psycopg.connect(DATABASE_URL)
     else:
         import sqlite3
         conn = sqlite3.connect("parcel_management.db")
